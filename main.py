@@ -23,5 +23,5 @@ def SHA256Sum(input: str = "123"):
     return {"sha256sum": cppmethods.sha256sum(input)}
 
 @app.get("/openssl/keypairgen")
-def GenerateKeyPair(input="123"):
+def GenerateKeyPair(usefulText: str = "REPLACE_WITH_USEFUL_TEXT"):
     return {"pub.key": "-1", "key.pem": "-1"}
