@@ -5,10 +5,7 @@ import uuid
 BASE_URL = "/micro"
 
 app = FastAPI(
-    root_path="/micro"
-    # docs_url=f"{BASE_URL}/docs",
-    # redoc_url=f"{BASE_URL}/redoc",
-    # openapi_url=f"{BASE_URL}/openapi.json"
+    root_path=BASE_URL
 )
 
 @app.get("/uuid")
