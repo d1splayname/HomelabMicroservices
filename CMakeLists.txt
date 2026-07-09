@@ -8,9 +8,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(pybind11 CONFIG REQUIRED)
 
 pybind11_add_module(cppmethods
+    cpp/bindings.cpp
+
+    cpp/test.cpp
     cpp/keypairgen.cpp
     cpp/sha256sum.cpp
-    cpp/test.cpp
 )
 
 target_include_directories(cppmethods PRIVATE
