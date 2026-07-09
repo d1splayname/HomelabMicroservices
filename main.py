@@ -12,3 +12,13 @@ app = FastAPI(
 def GetUuid():
     id = uuid.uuid4()
     return {"uuid": id}
+
+@app.get("/openssl/SHA256sum")
+def SHA256Sum(input="123"):
+    result = input
+
+    return {"SHA256sum": result}
+
+@app.get("/openssl/keypairgen")
+def GenerateKeyPair(input="123"):
+    return {"pub.key": "-1", "key.pem": "-1"}
