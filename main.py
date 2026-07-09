@@ -2,6 +2,9 @@ from fastapi import FastAPI
 
 import uuid
 
+# import my cpp functions
+import cppmethods
+
 BASE_URL = "/micro"
 
 app = FastAPI(
