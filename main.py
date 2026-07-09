@@ -11,4 +11,4 @@ app = FastAPI(
 @app.get("/uuid")
 def GetUuid():
     id = uuid.uuid4()
-    return id
+    return {"uuid": id}
