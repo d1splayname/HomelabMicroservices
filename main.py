@@ -20,7 +20,7 @@ def GetUuid():
 def SHA256Sum(input: str = ""):
     result = input
 
-    return {"sha256sum": cppmethods.sha256sum(input)}
+    return {"input": input, "sha256sum": cppmethods.sha256sum(input)}
 
 @app.get("/openssl/keypairgen")
 def GenerateKeyPair(usefulText: str = "USEFUL_NOTE"):
