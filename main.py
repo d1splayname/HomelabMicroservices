@@ -3,8 +3,7 @@ from fastapi import FastAPI
 import uuid
 import os
 
-# import my cpp functions
-import cppmethods
+import cppmethods # my cpp functions
 
 ENV = os.getenv("ENV", "dev")
 
