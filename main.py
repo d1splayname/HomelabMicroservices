@@ -17,7 +17,7 @@ def GetUuid():
     return {"uuid": id}
 
 @app.get("/openssl/sha256sum")
-def SHA256Sum(input: str = "123"):
+def SHA256Sum(input: str = ""):
     result = input
 
     return {"sha256sum": cppmethods.sha256sum(input)}
