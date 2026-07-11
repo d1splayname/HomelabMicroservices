@@ -1,11 +1,17 @@
 from fastapi import FastAPI
 
 import uuid
+import os
 
 # import my cpp functions
 import cppmethods
 
-BASE_URL = "/micro"
+ENV = os.getenv("ENV", "dev")
+
+if ENV == "dev":
+    BASE_URL = ""
+else:
+    BASE_URL = "/micro"
 
 app = FastAPI(
     root_path=BASE_URL
