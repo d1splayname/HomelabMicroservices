@@ -27,6 +27,11 @@ def SHA256Sum(input: str = ""):
 
     return {"input": input, "output": output}
 
+@app.get("/hash/bcrypt")
+def Bcrypt(input: str = ""):
+    output = cppmethods.bcrypt(input)
+
+    return {"input": input, "output": output}
 
 @app.get("/add")
 def Add(a: int = 1, b: int = 1):

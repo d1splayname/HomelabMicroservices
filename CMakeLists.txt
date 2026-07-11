@@ -11,8 +11,8 @@ pybind11_add_module(cppmethods
     cpp/bindings.cpp
 
     cpp/test.cpp
-    cpp/keypairgen.cpp
     cpp/sha256sum.cpp
+    cpp/bcrypt.cpp
 )
 
 target_include_directories(cppmethods PRIVATE
