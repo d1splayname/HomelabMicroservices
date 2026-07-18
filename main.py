@@ -5,16 +5,7 @@ import os
 
 import cppmethods # my cpp functions
 
-ENV = os.getenv("ENV", "dev")
-
-if ENV == "dev":
-    BASE_URL = ""
-else:
-    BASE_URL = "/micro"
-
-app = FastAPI(
-    root_path=BASE_URL
-)
+app = FastAPI()
 
 @app.get("/uuid")
 def GetUuid():
