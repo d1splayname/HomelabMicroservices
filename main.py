@@ -16,17 +16,11 @@ def GetUuid():
 def SHA256Sum(input: str = ""):
     output = cppmethods.sha256sum(input)
 
-    return {"input": input, "output": output}
-
-@app.get("/hash/bcrypt")
-def Bcrypt(input: str = ""):
-    output = cppmethods.bcrypt(input)
-
-    return {"input": input, "output": output}
+    return {"input": input, "sha256sum": output}
 
 @app.get("/add")
 def Add(a: int = 1, b: int = 1):
-    return {"result": cppmethods.add(a, b)}
+    return {"output": cppmethods.add(a, b)}
 
 
 @app.get("/url/encode")
