@@ -27,3 +27,16 @@ def Bcrypt(input: str = ""):
 @app.get("/add")
 def Add(a: int = 1, b: int = 1):
     return {"result": cppmethods.add(a, b)}
+
+
+@app.get("/url/encode")
+def URLEncode(input: str = ""):
+    pass
+
+@app.get("/url/decode")
+def URLDecode(input: str = ""):
+    pass
+
+@app.get("/url/normalizer")
+def URLNormalizer(input: str = ""):
+    pass
