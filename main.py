@@ -41,6 +41,14 @@ def Add(a: int = 1, b: int = 1):
     return {"output": cppmethods.add(a, b)}
 
 
+# Server helper functions
+def _QueryServerAuth(command, params):
+    pass
+
+def _QueryServerWeight(command, params):
+    pass
+
+
 @app.get("/url/encode")
 def URLEncode(input: str = ""):
     pass
