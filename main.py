@@ -12,6 +12,8 @@ def GetUuid():
     id = uuid.uuid4()
     return {"uuid": id}
 
+
+# Hashing functions
 @app.get("/hash/sha256sum")
 def SHA256Sum(input: str = ""):
     output = cppmethods.sha256sum(input)
@@ -36,6 +38,7 @@ def CheckBcrypt(input: str = "", storedHash: str = ""):
 
     return {"valid": bcrypt.checkpw(encodedPass, encodedHash)}
 
+# cppmethods example
 @app.get("/add")
 def Add(a: int = 1, b: int = 1):
     return {"output": cppmethods.add(a, b)}
