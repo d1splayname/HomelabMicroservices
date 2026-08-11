@@ -7,6 +7,11 @@ import cppmethods # my cpp functions
 
 app = FastAPI()
 
+
+@app.get("/ping")
+def Ping():
+    return {"ping": "pong!"}
+
 @app.get("/uuid")
 def GetUuid():
     id = uuid.uuid4()
