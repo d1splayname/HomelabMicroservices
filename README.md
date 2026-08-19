@@ -5,9 +5,6 @@ Various useful microservices ran on my homelab
 
 ```
 python3 -m venv .venv
-
-```
-```
 pip install -r requirements.txt
 ```
 
