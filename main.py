@@ -134,6 +134,27 @@ def ServerAuth(user: str = "", password: str = "", db: Session = Depends(AuthGet
     return {"user": user.username, "serverAuth": output.get("valid", False)}
 
 
+# Weight
+@app.post("/weight/log")
+def weightLog(weight_lb: float = 0.0, db: Session = Depends(WeightGetDB)):
+    if weight_lb <= 0.0:
+        return {"input weight_lb": weight_lb, "error": "Weight must be greater than 0"}
+
+    statement = Weight(weight_lb=weight_lb)
+    
+    try:
+        db.add(statement)
+        db.commit()
+        db.refresh(statement)
+    except Exception as ex:
+        try:
+            db.rollback()
+        except Exception:
+            pass
+        return {"input weight_lb": weight_lb, "error": str(ex)}
+
+    return {"input weight_lb": weight_lb, "output": weight_lb, "id": getattr(statement, "id", None), "timestamp": getattr(statement, "timestamp", None)}
+
 
 @app.get("/url/encode")
 def URLEncode(input: str = ""):
