@@ -1,0 +1,32 @@
+name: Deploy production
+
+on:
+  push:
+    branches:
+      - prod
+
+permissions: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call production deployment webhook
+        env:
+          DEPLOY_WEBHOOK_URL: ${{ secrets.PROD_DEPLOY_WEBHOOK_URL }}
+          DEPLOY_WEBHOOK_TOKEN: ${{ secrets.PROD_DEPLOY_WEBHOOK_TOKEN }}
+          COMMIT_SHA: ${{ github.sha }}
+          REPOSITORY: ${{ github.repository }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+
+          test -n "$DEPLOY_WEBHOOK_URL"
+          test -n "$DEPLOY_WEBHOOK_TOKEN"
+
+          curl --fail-with-body --silent --show-error --location \
+            --request POST "$DEPLOY_WEBHOOK_URL" \
+            --header "Authorization: Bearer $DEPLOY_WEBHOOK_TOKEN" \
+            --header "Content-Type: application/json" \
+            --data "$(printf '{\"repository\":\"%s\",\"ref\":\"%s\",\"sha\":\"%s\"}' \
+              "$REPOSITORY" "$REF_NAME" "$COMMIT_SHA")"
