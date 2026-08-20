@@ -1,1 +1,1 @@
-uvicorn main:app --reload --port 3999
+.venv/bin/python -m uvicorn main:app --reload --port 3999
