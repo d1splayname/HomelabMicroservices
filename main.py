@@ -167,3 +167,22 @@ def URLDecode(input: str = ""):
 @app.get("/url/normalizer")
 def URLNormalizer(input: str = ""):
     pass
+
+
+### Webhooks ###
+@app.post("/webhook/deploy")
+def DeployMicroservices(service: str = "", bearerToken: str = ""):
+    validServices = ["recipemanager", "microservices", "controlpanel", "ogpt", "strava"]
+
+    if service not in validServices:
+        return {"error": f"Invalid service: {service}"}
+
+    if not bearerToken:
+        return {"error": "Missing bearer token"}
+
+    if bearerToken != os.environ.get("WEBHOOK_BEARER_TOKEN", ""):
+        return {"error": "Invalid bearer token"}
+
+    
+
+    return {"services": service, "success": 1}
