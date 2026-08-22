@@ -19,3 +19,11 @@ install new libraries, then:
 ```
 pip freeze > requirements.txt
 ```
+
+Requirements:
+MariaDB Connector/C
+
+Linux
+```
+sudo apt install libmariadb-dev libmariadb-dev-compat
+```

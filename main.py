@@ -167,3 +167,7 @@ def URLDecode(input: str = ""):
 @app.get("/url/normalizer")
 def URLNormalizer(input: str = ""):
     pass
+
+@app.get("/light")
+def Light():
+    return {"light": "on"}
