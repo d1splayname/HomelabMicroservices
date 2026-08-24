@@ -136,7 +136,7 @@ def ServerAuth(user: str = "", password: str = "", db: Session = Depends(AuthGet
 
 # Weight
 @app.post("/weight/log")
-def weightLog(weight_lb: float = 0.0, db: Session = Depends(WeightGetDB)):
+def weightLog(weight_lb: float, db: Session = Depends(WeightGetDB)):
     if weight_lb <= 0.0:
         return {"input weight_lb": weight_lb, "error": "Weight must be greater than 0"}
 
