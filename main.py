@@ -175,3 +175,6 @@ def URLNormalizer(input: str = ""):
 @app.get("/wake/joshuahp")
 def WakeUpJoshuaHP():
     subprocess.call(["wakeonlan", JOSHUAHP_MAC_ADDR])
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="localhost", port=3003)
