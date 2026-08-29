@@ -1,53 +1,17 @@
-from pathlib import Path
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from dotenv import load_dotenv
 
 import os
 from urllib.parse import quote_plus
 
+load_dotenv()
 
-def _load_dotenv(dotenv_path: Path) -> None:
-    if not dotenv_path.is_file():
-        return
-
-    for line in dotenv_path.read_text().splitlines():
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-        if "=" not in stripped:
-            continue
-
-        key, value = stripped.split("=", 1)
-        key = key.strip()
-        if not key or key in os.environ:
-            continue
-
-        value = value.strip().strip('"').strip("'")
-        os.environ[key] = value
-
-
-_load_dotenv(Path(__file__).resolve().parent / ".env")
-
-
-def _require_env(name: str) -> str:
-    value = os.getenv(name)
-    if not value or value.strip().lower() == "none":
-        raise RuntimeError(
-            f"Environment variable {name} is required and must be set to a valid value."
-        )
-    return value
-
-
-_DB_HOST = _require_env("DB_HOST")
-_DB_PORT = _require_env("DB_PORT")
-_DB_USERNAME = _require_env("DB_USER")
-_DB_PASSWORD = _require_env("DB_PASS")
-_WEIGHT_DB_DATABASE = _require_env("WEIGHT_DB_DATABASE")
-
-if not _DB_PORT.isdigit():
-    raise RuntimeError(
-        f"Environment variable DB_PORT must be a number, got {_DB_PORT!r}."
-    )
+_DB_HOST = os.getenv("DB_HOST")
+_DB_PORT = os.getenv("DB_PORT")
+_DB_USERNAME = os.getenv("DB_USER")
+_DB_PASSWORD = os.getenv("DB_PASS")
+_WEIGHT_DB_DATABASE = os.getenv("LOG_DB_DATABASE")
 
 _DATABASE_URL = (
     "mariadb+mariadbconnector://"
