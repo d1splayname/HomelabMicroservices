@@ -7,11 +7,11 @@ class Gas(GasBase):
     __tablename__ = "gas"
 
     id: Mapped[int] = mapped_column(
-        primay_key=True,
+        primary_key=True,
         nullable=False
     )
 
-    gas: Mapped[float] = mapped_column(
+    price: Mapped[float] = mapped_column(
         nullable=False
     )
 
