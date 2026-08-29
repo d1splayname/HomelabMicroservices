@@ -143,11 +143,11 @@ def GasLog(price: float, db: Session = Depends(GasGetDB)):
     if price <= 0.0:
         return {"input": price, "error": "Price must be greater than 0"}, 400
 
-    statement = Weight(price=price)
+    statement = Gas(price=price)
 
     try:
         db.add(statement)
-        db.commit(statement)
+        db.commit()
         db.refresh(statement)
     except Exception as ex:
         try:
