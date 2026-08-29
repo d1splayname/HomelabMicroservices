@@ -1,48 +1,28 @@
 import os
-from pathlib import Path
-
-from fastapi import FastAPI, Depends
-
+import subprocess
 import uuid
 import bcrypt
+
+from fastapi import FastAPI, Depends
+from dotenv import load_dotenv
 
 # ORM libs
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-
-def _load_dotenv(dotenv_path: Path) -> None:
-    if not dotenv_path.is_file():
-        return
-
-    for line in dotenv_path.read_text().splitlines():
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-        if "=" not in stripped:
-            continue
-
-        key, value = line.split("=", 1)
-        key = key.strip()
-        if not key or key in os.environ:
-            continue
-
-        value = value.strip().strip('"').strip("'")
-        os.environ[key] = value
-
-
-_load_dotenv(Path(__file__).resolve().parent / ".env")
-
 from routers.auth import authEngine, AuthGetDB
-from routers.weight import weightEngine, WeightGetDB
-
 from models.user import User, UserBase
+
+from routers.weight import weightEngine, WeightGetDB
 from models.weight import Weight, WeightBase
 
 
 import cppmethods # my cpp functions
 
+load_dotenv()
 app = FastAPI()
+
+JOSHUAHP_MAC_ADDR = os.getenv("JOSHUAHP_MAC_ADDR")
 
 UserBase.metadata.create_all(authEngine)
 WeightBase.metadata.create_all(weightEngine)
