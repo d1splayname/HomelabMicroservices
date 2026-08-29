@@ -63,7 +63,7 @@ def CheckBcrypt(input: str = "", storedHash: str = ""):
     encodedHash = storedHash.encode()
 
     if len(storedHash) != 60:
-        return {"error": "Invalid hash length"}
+        return {"error": "Invalid hash length"}, 400
 
     return {"valid": bcrypt.checkpw(encodedPass, encodedHash)}
 
@@ -86,7 +86,7 @@ def GetUserByName(name: str, db: Session = Depends(AuthGetDB)):
         user = db.execute(statement).scalar_one_or_none()
         return {"user": user}
     except Exception as ex:
-        return {"error": str(ex)}
+        return {"error": str(ex)}, 500
     
 @app.get("/authdb/test")
 def DbTest(db: Session = Depends(AuthGetDB)):
@@ -96,7 +96,7 @@ def DbTest(db: Session = Depends(AuthGetDB)):
         user = db.execute(statement).scalar_one_or_none()
         return {"orm": "ok", "user_found": user is not None}
     except Exception as exc:
-        return {"orm": "error", "detail": str(exc)}
+        return {"orm": "error", "detail": str(exc)}, 500
 
 
 @app.get("/auth/server")
@@ -122,7 +122,7 @@ def ServerAuth(user: str = "", password: str = "", db: Session = Depends(AuthGet
 @app.post("/log/weight")
 def weightLog(weight_lb: float, db: Session = Depends(WeightGetDB)):
     if weight_lb <= 0.0:
-        return {"input weight_lb": weight_lb, "error": "Weight must be greater than 0"}
+        return {"input weight_lb": weight_lb, "error": "Weight must be greater than 0"}, 400
 
     statement = Weight(weight_lb=weight_lb)
     
@@ -135,7 +135,7 @@ def weightLog(weight_lb: float, db: Session = Depends(WeightGetDB)):
             db.rollback()
         except Exception:
             pass
-        return {"input weight_lb": weight_lb, "error": str(ex)}
+        return {"input weight_lb": weight_lb, "error": str(ex)}, 500
 
     return {"input weight_lb": weight_lb, "output": weight_lb, "id": getattr(statement, "id", None), "timestamp": getattr(statement, "timestamp", None)}
 
