@@ -16,6 +16,8 @@ from models.user import User, UserBase
 from routers.weight import weightEngine, WeightGetDB
 from models.weight import Weight, WeightBase
 
+from routers.gas import gasEngine, GasGetDB
+from models.gas import Gas, GasBase
 
 import cppmethods # my cpp functions
 
