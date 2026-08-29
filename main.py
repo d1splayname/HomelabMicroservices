@@ -1,10 +1,14 @@
+from fastapi import FastAPI, Depends
+from dotenv import load_dotenv
+
 import os
 import subprocess
 import uuid
 import bcrypt
+import uvicorn
+import sys
 
-from fastapi import FastAPI, Depends
-from dotenv import load_dotenv
+import cppmethods # my cpp functions
 
 # ORM libs
 from sqlalchemy import select
@@ -18,8 +22,6 @@ from models.weight import Weight, WeightBase
 
 from routers.gas import gasEngine, GasGetDB
 from models.gas import Gas, GasBase
-
-import cppmethods # my cpp functions
 
 load_dotenv()
 app = FastAPI()
