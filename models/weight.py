@@ -5,7 +5,7 @@ from routers.weight import WeightBase
 
 
 class Weight(WeightBase):
-    __tablename__ = "log"
+    __tablename__ = "weight"
 
     id: Mapped[int] = mapped_column(
         primary_key=True,
