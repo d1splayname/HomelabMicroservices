@@ -172,6 +172,6 @@ def URLDecode(input: str = ""):
 def URLNormalizer(input: str = ""):
     pass
 
-@app.get("/light")
-def Light():
-    return {"light": "on"}
+@app.get("/wake/joshuahp")
+def WakeUpJoshuaHP():
+    subprocess.call(["wakeonlan", JOSHUAHP_MAC_ADDR])
