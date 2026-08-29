@@ -1,18 +1,17 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import String, text
 
-from routers.weight import WeightBase
+from routers.gas import GasBase
 
-
-class Weight(WeightBase):
-    __tablename__ = "weight"
+class Gas(GasBase):
+    __tablename__ = "gas"
 
     id: Mapped[int] = mapped_column(
-        primary_key=True,
+        primay_key=True,
         nullable=False
     )
 
-    weight_lb: Mapped[float] = mapped_column(
+    gas: Mapped[float] = mapped_column(
         nullable=False
     )
 

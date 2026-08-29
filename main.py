@@ -1,48 +1,30 @@
 import os
-from pathlib import Path
-
-from fastapi import FastAPI, Depends
-
+import subprocess
 import uuid
 import bcrypt
+
+from fastapi import FastAPI, Depends
+from dotenv import load_dotenv
 
 # ORM libs
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-
-def _load_dotenv(dotenv_path: Path) -> None:
-    if not dotenv_path.is_file():
-        return
-
-    for line in dotenv_path.read_text().splitlines():
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-        if "=" not in stripped:
-            continue
-
-        key, value = line.split("=", 1)
-        key = key.strip()
-        if not key or key in os.environ:
-            continue
-
-        value = value.strip().strip('"').strip("'")
-        os.environ[key] = value
-
-
-_load_dotenv(Path(__file__).resolve().parent / ".env")
-
 from routers.auth import authEngine, AuthGetDB
-from routers.weight import weightEngine, WeightGetDB
-
 from models.user import User, UserBase
+
+from routers.weight import weightEngine, WeightGetDB
 from models.weight import Weight, WeightBase
 
+from routers.gas import gasEngine, GasGetDB
+from models.gas import Gas, GasBase
 
 import cppmethods # my cpp functions
 
+load_dotenv()
 app = FastAPI()
+
+JOSHUAHP_MAC_ADDR = os.getenv("JOSHUAHP_MAC_ADDR")
 
 UserBase.metadata.create_all(authEngine)
 WeightBase.metadata.create_all(weightEngine)
@@ -135,8 +117,8 @@ def ServerAuth(user: str = "", password: str = "", db: Session = Depends(AuthGet
 
 
 # Weight
-@app.post("/weight/log")
-def weightLog(weight_lb: float = 0.0, db: Session = Depends(WeightGetDB)):
+@app.post("/log/weight")
+def weightLog(weight_lb: float, db: Session = Depends(WeightGetDB)):
     if weight_lb <= 0.0:
         return {"input weight_lb": weight_lb, "error": "Weight must be greater than 0"}
 
@@ -155,6 +137,28 @@ def weightLog(weight_lb: float = 0.0, db: Session = Depends(WeightGetDB)):
 
     return {"input weight_lb": weight_lb, "output": weight_lb, "id": getattr(statement, "id", None), "timestamp": getattr(statement, "timestamp", None)}
 
+# Gas
+@app.post("/log/gas")
+def GasLog(price: float, db: Session = Depends(GasGetDB)):
+    if price <= 0.0:
+        return {"input": price, "error": "Price must be greater than 0"}
+
+    statement = Weight(price=price)
+
+    try:
+        db.add(statement)
+        db.commit(statement)
+        db.refresh(statement)
+    except Exception as ex:
+        try:
+            db.rollback()
+        except Exception:
+            pass
+
+        return {"input price": price, "error": str(ex)}
+
+    return {"input": price, "success": True}
+    
 
 @app.get("/url/encode")
 def URLEncode(input: str = ""):
@@ -186,3 +190,8 @@ def DeployMicroservices(service: str = "", bearerToken: str = ""):
     
 
     return {"services": service, "success": 1}
+
+
+@app.get("/light")
+def Light():
+    return {"light": "on"}
