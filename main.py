@@ -141,7 +141,7 @@ def weightLog(weight_lb: float, db: Session = Depends(WeightGetDB)):
 @app.post("/log/gas")
 def GasLog(price: float, db: Session = Depends(GasGetDB)):
     if price <= 0.0:
-        return {"input": price, "error": "Price must be greater than 0"}
+        return {"input": price, "error": "Price must be greater than 0"}, 400
 
     statement = Weight(price=price)
 
@@ -155,7 +155,7 @@ def GasLog(price: float, db: Session = Depends(GasGetDB)):
         except Exception:
             pass
 
-        return {"input price": price, "error": str(ex)}
+        return {"input price": price, "error": str(ex)}, 500
 
     return {"input": price, "success": True}
     
