@@ -135,6 +135,28 @@ def weightLog(weight_lb: float, db: Session = Depends(WeightGetDB)):
 
     return {"input weight_lb": weight_lb, "output": weight_lb, "id": getattr(statement, "id", None), "timestamp": getattr(statement, "timestamp", None)}
 
+# Gas
+@app.post("/log/gas")
+def GasLog(price: float, db: Session = Depends(GasGetDB)):
+    if price <= 0.0:
+        return {"input": price, "error": "Price must be greater than 0"}
+
+    statement = Weight(price=price)
+
+    try:
+        db.add(statement)
+        db.commit(statement)
+        db.refresh(statement)
+    except Exception as ex:
+        try:
+            db.rollback()
+        except Exception:
+            pass
+
+        return {"input price": price, "error": str(ex)}
+
+    return {"input": price, "success": True}
+    
 
 @app.get("/url/encode")
 def URLEncode(input: str = ""):
