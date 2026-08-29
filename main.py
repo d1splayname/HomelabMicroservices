@@ -179,4 +179,18 @@ def WakeUpJoshuaHP():
     subprocess.call(["wakeonlan", JOSHUAHP_MAC_ADDR])
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=3003)
+    _port: int = 3002
+
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "help":
+            print("Usage: python {sys.argv[0]} [OPTIONS]")
+            print(" dev     run in development mode")
+            print(" help    show this message")
+
+            exit(0)
+        if sys.argv[1] == "dev":
+            print("Microservices: dev mode")
+
+            _port = 3999
+
+    uvicorn.run(app, host="localhost", port=_port)
