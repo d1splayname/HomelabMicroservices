@@ -15,7 +15,7 @@ _GAS_DB_DATABASE = os.getenv("LOG_DB_DATABASE")
 
 _DATABASE_URL = (
     "mariadb+mariadbconnector://"
-    f"{quote_plus(_DB_USERNAME)}:{quote_plus(_DB_PASSWORD)}"
+    f"{quote_plus(_DB_USERNAME)}:{quote_plus(_DB_PASSWORD)}@"
     f"{_DB_HOST}:{_DB_PORT}/{_GAS_DB_DATABASE}"
 )
 
@@ -28,7 +28,7 @@ gasEngine = create_engine(
 
 SessionLocal = sessionmaker (
     bind=gasEngine,
-    autoFlush=False,
+    autoflush=False,
     expire_on_commit=False,
 )
 
