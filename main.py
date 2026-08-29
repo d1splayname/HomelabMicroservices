@@ -1,10 +1,14 @@
+from fastapi import FastAPI, Depends
+from dotenv import load_dotenv
+
 import os
 import subprocess
 import uuid
 import bcrypt
+import uvicorn
+import sys
 
-from fastapi import FastAPI, Depends
-from dotenv import load_dotenv
+import cppmethods # my cpp functions
 
 # ORM libs
 from sqlalchemy import select
@@ -18,8 +22,6 @@ from models.weight import Weight, WeightBase
 
 from routers.gas import gasEngine, GasGetDB
 from models.gas import Gas, GasBase
-
-import cppmethods # my cpp functions
 
 load_dotenv()
 app = FastAPI()
@@ -61,7 +63,7 @@ def CheckBcrypt(input: str = "", storedHash: str = ""):
     encodedHash = storedHash.encode()
 
     if len(storedHash) != 60:
-        return {"error": "Invalid hash length"}
+        return {"error": "Invalid hash length"}, 400
 
     return {"valid": bcrypt.checkpw(encodedPass, encodedHash)}
 
@@ -84,7 +86,7 @@ def GetUserByName(name: str, db: Session = Depends(AuthGetDB)):
         user = db.execute(statement).scalar_one_or_none()
         return {"user": user}
     except Exception as ex:
-        return {"error": str(ex)}
+        return {"error": str(ex)}, 500
     
 @app.get("/authdb/test")
 def DbTest(db: Session = Depends(AuthGetDB)):
@@ -94,7 +96,7 @@ def DbTest(db: Session = Depends(AuthGetDB)):
         user = db.execute(statement).scalar_one_or_none()
         return {"orm": "ok", "user_found": user is not None}
     except Exception as exc:
-        return {"orm": "error", "detail": str(exc)}
+        return {"orm": "error", "detail": str(exc)}, 500
 
 
 @app.get("/auth/server")
@@ -120,7 +122,7 @@ def ServerAuth(user: str = "", password: str = "", db: Session = Depends(AuthGet
 @app.post("/log/weight")
 def weightLog(weight_lb: float, db: Session = Depends(WeightGetDB)):
     if weight_lb <= 0.0:
-        return {"input weight_lb": weight_lb, "error": "Weight must be greater than 0"}
+        return {"input weight_lb": weight_lb, "error": "Weight must be greater than 0"}, 400
 
     statement = Weight(weight_lb=weight_lb)
     
@@ -133,7 +135,7 @@ def weightLog(weight_lb: float, db: Session = Depends(WeightGetDB)):
             db.rollback()
         except Exception:
             pass
-        return {"input weight_lb": weight_lb, "error": str(ex)}
+        return {"input weight_lb": weight_lb, "error": str(ex)}, 500
 
     return {"input weight_lb": weight_lb, "output": weight_lb, "id": getattr(statement, "id", None), "timestamp": getattr(statement, "timestamp", None)}
 
@@ -177,4 +179,18 @@ def WakeUpJoshuaHP():
     subprocess.call(["wakeonlan", JOSHUAHP_MAC_ADDR])
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=3003)
+    _port: int = 3002
+
+    if len(sys.argv) > 1:
+        if sys.argv[1] == "help":
+            print("Usage: python {sys.argv[0]} [OPTIONS]")
+            print(" dev     run in development mode")
+            print(" help    show this message")
+
+            exit(0)
+        if sys.argv[1] == "dev":
+            print("Microservices: dev mode")
+
+            _port = 3999
+
+    uvicorn.run(app, host="localhost", port=_port)
