@@ -145,6 +145,13 @@ def GasLog(price: float, db: Session = Depends(GasGetDB)):
     if price <= 0.0:
         return {"input": price, "error": "Price must be greater than 0"}, 400
 
+    # sanity check:
+    # gas shouldn't be more than $10 or else that would be insane
+    while price > 10:
+        price /= 10
+
+    price = round(price, 2)
+
     statement = Gas(price=price)
 
     try:
