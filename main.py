@@ -73,51 +73,6 @@ def Add(a: int = 1, b: int = 1):
     return {"output": cppmethods.add(a, b)}
 
 
-# Authentication
-@app.get("/users")
-def GetUsers(db: Session = Depends(AuthGetDB)):
-    users = db.query(User).all()
-    return users
-
-@app.get("/user/exists")
-def GetUserByName(name: str, db: Session = Depends(AuthGetDB)):
-    statement = select(User).where(User.username == name)
-    try:
-        user = db.execute(statement).scalar_one_or_none()
-        return {"user": user}
-    except Exception as ex:
-        return {"error": str(ex)}, 500
-    
-@app.get("/authdb/test")
-def DbTest(db: Session = Depends(AuthGetDB)):
-    statement = select(User).limit(1)
-
-    try:
-        user = db.execute(statement).scalar_one_or_none()
-        return {"orm": "ok", "user_found": user is not None}
-    except Exception as exc:
-        return {"orm": "error", "detail": str(exc)}, 500
-
-
-@app.get("/auth/server")
-def ServerAuth(user: str = "", password: str = "", db: Session = Depends(AuthGetDB)):
-    # get stored hash from server
-
-    statement = select(User).where(User.username == user).limit(1)
-
-    try:
-        user = db.execute(statement).scalar_one_or_none()
-        print("🚀 ~ ServerAuth ~ user:", user)
-    except Exception as ex:
-        return {"user": user, "serverAuth": False, "error": str(ex)}
-    
-    output = CheckBcrypt(password, user.password_hash)
-    
-    print("🚀 ~ ServerAuth ~ output:", output)
-
-    return {"user": user.username, "serverAuth": output.get("valid", False)}
-
-
 # Weight
 @app.post("/log/weight")
 def weightLog(weight_lb: float, db: Session = Depends(WeightGetDB)):
