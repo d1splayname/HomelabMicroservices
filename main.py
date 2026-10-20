@@ -23,6 +23,8 @@ from models.gas import Gas, GasBase
 from routers.climate import climateEngine, ClimateGetDB
 from models.climate import Climate, ClimateBase
 
+from helper import CToF, FToC
+
 
 load_dotenv()
 app = FastAPI()
