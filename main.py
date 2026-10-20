@@ -14,22 +14,24 @@ import cppmethods # my cpp functions
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from routers.auth import authEngine, AuthGetDB
-from models.user import User, UserBase
-
 from routers.weight import weightEngine, WeightGetDB
 from models.weight import Weight, WeightBase
 
 from routers.gas import gasEngine, GasGetDB
 from models.gas import Gas, GasBase
 
+from routers.climate import climateEngine, ClimateGetDB
+from models.climate import Climate, ClimateBase
+
+
 load_dotenv()
 app = FastAPI()
 
 JOSHUAHP_MAC_ADDR = os.getenv("JOSHUAHP_MAC_ADDR")
 
-UserBase.metadata.create_all(authEngine)
 WeightBase.metadata.create_all(weightEngine)
+GasBase.metadata.create_all(gasEngine)
+ClimateBase.metadata.create_all(climateEngine)
 
 
 @app.get("/ping")
