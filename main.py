@@ -143,7 +143,10 @@ def WakeUpJoshuaHP():
     subprocess.call(["wakeonlan", JOSHUAHP_MAC_ADDR])
 
 if __name__ == "__main__":
+    _host = "localhost"
     _port: int = 3002
+
+    _reload: bool = False
 
     if len(sys.argv) > 1:
         if sys.argv[1] == "help":
@@ -157,4 +160,6 @@ if __name__ == "__main__":
 
             _port = 3999
 
-    uvicorn.run(app, host="localhost", port=_port)
+            _reload = True
+
+    uvicorn.run("main:app", host=_host, port=_port, reload=_reload)
