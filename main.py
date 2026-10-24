@@ -184,7 +184,7 @@ def GetClimate(
         db.add(statement)
         db.commit()
 
-    return {"success": True}
+    return {"success": True, "dataType": dataType, "data": data}
 
 @app.get("/climate")
 def GetClimate(dataType: str, db: Session = Depends(ClimateGetDB)):
