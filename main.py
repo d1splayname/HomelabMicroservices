@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from dotenv import load_dotenv
+
 
 import os
 import subprocess
@@ -9,6 +10,7 @@ import uvicorn
 import sys
 
 import cppmethods # my cpp functions
+import schemas
 
 # ORM libs
 from sqlalchemy import func, select
@@ -79,7 +81,15 @@ def Add(a: int = 1, b: int = 1):
 
 # Weight
 @app.post("/log/weight")
-def weightLog(weight_lb: float, db: Session = Depends(WeightGetDB)):
+def weightLog(
+    weight_lb: float | None = None,
+    body: schemas.WeightLogRequest | None = None,
+    db: Session = Depends(WeightGetDB),
+):
+    weight_lb = body.weight_lb if body is not None else weight_lb
+    if weight_lb is None:
+        raise HTTPException(status_code=422, detail="weight_lb is required in the JSON body or query string")
+
     if weight_lb <= 0.0:
         return {"input weight_lb": weight_lb, "error": "Weight must be greater than 0"}, 400
 
@@ -100,7 +110,15 @@ def weightLog(weight_lb: float, db: Session = Depends(WeightGetDB)):
 
 # Gas
 @app.post("/log/gas")
-def GasLog(price: float, db: Session = Depends(GasGetDB)):
+def GasLog(
+    price: float | None = None,
+    body: schemas.GasLogRequest | None = None,
+    db: Session = Depends(GasGetDB),
+):
+    price = body.price if body is not None else price
+    if price is None:
+        raise HTTPException(status_code=422, detail="price is required in the JSON body or query string")
+
     if price <= 0.0:
         return {"input": price, "error": "Price must be greater than 0"}, 400
 
@@ -130,7 +148,22 @@ def GasLog(price: float, db: Session = Depends(GasGetDB)):
 
 # Climate control
 @app.post("/climate")
-def GetClimate(dataType: str, data: float, db: Session = Depends(ClimateGetDB)):
+def GetClimate(
+    dataType: str | None = None,
+    data: float | None = None,
+    body: schemas.ClimateUpdateRequest | None = None,
+    db: Session = Depends(ClimateGetDB),
+):
+    if body is not None:
+        dataType = body.dataType
+        data = body.data
+
+    if dataType is None or data is None:
+        raise HTTPException(
+            status_code=422,
+            detail="dataType and data are required in the JSON body or query string",
+        )
+
     if dataType not in ["temperature", "humidity"]:
         return {"input": dataType, "error": "Invalid dataType"}, 400
 
