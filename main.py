@@ -126,7 +126,45 @@ def GasLog(price: float, db: Session = Depends(GasGetDB)):
         return {"input price": price, "error": str(ex)}, 500
 
     return {"input": price, "success": True}
+
+
+# Climate control
+@app.post("/climate")
+def GetClimate(dataType: str, data: float, db: Session = Depends(ClimateGetDB)):
+    if dataType not in ["temperature", "humidity"]:
+        return {"input": dataType, "error": "Invalid dataType"}, 400
+
+    if not data:
+        return {"input": data, "error": "Data must be provided"}, 400
+
+    if data <= 0.0:
+        return {"input": data, "error": "Data must be greater than 0"}, 400
     
+    statement = db.query(Climate).filter(Climate.type == dataType).first()
+
+    if statement:
+        statement.data = data
+        db.commit()
+    else:
+        statement = Climate(type=dataType, data=data)
+        db.add(statement)
+        db.commit()
+
+    return {"success": True}
+
+@app.get("/climate")
+def GetClimate(dataType: str, db: Session = Depends(ClimateGetDB)):
+    if dataType not in ["temperature", "humidity"]:
+        return {"input": dataType, "error": "Invalid dataType"}, 400
+
+    statement = select(Climate).where(Climate.type == dataType).order_by(Climate.timestamp.desc()).limit(1)
+    result = db.scalars(statement).first()
+
+    if result is None:
+        return {"dataType": dataType, "data": None, "timestamp": None}
+    
+    return {"dataType": dataType, "data": result.data, "timestamp": result.timestamp}
+
 
 @app.get("/url/encode")
 def URLEncode(input: str = ""):
