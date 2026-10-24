@@ -6,15 +6,9 @@ from routers.climate import ClimateBase
 class Climate(ClimateBase):
     __tablename__ = "climate"
 
-    id: Mapped[int] = mapped_column(
-        Integer,
-        primary_key=True,
-        autoincrement=True,
-        nullable=False
-    )
-
     type: Mapped[str] = mapped_column(
         String(64),
+        primary_key=True,
         nullable=False
     )
 
