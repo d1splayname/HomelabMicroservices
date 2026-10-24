@@ -11,7 +11,7 @@ import sys
 import cppmethods # my cpp functions
 
 # ORM libs
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from routers.weight import weightEngine, WeightGetDB
@@ -144,6 +144,7 @@ def GetClimate(dataType: str, data: float, db: Session = Depends(ClimateGetDB)):
 
     if statement:
         statement.data = data
+        statement.timestamp = func.current_timestamp()
         db.commit()
     else:
         statement = Climate(type=dataType, data=data)
