@@ -11,11 +11,8 @@ import sys
 import cppmethods # my cpp functions
 
 # ORM libs
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
-
-from routers.auth import authEngine, AuthGetDB
-from models.user import User, UserBase
 
 from routers.weight import weightEngine, WeightGetDB
 from models.weight import Weight, WeightBase
@@ -23,13 +20,20 @@ from models.weight import Weight, WeightBase
 from routers.gas import gasEngine, GasGetDB
 from models.gas import Gas, GasBase
 
+from routers.climate import climateEngine, ClimateGetDB
+from models.climate import Climate, ClimateBase
+
+from helper import CToF, FToC
+
+
 load_dotenv()
 app = FastAPI()
 
 JOSHUAHP_MAC_ADDR = os.getenv("JOSHUAHP_MAC_ADDR")
 
-UserBase.metadata.create_all(authEngine)
 WeightBase.metadata.create_all(weightEngine)
+GasBase.metadata.create_all(gasEngine)
+ClimateBase.metadata.create_all(climateEngine)
 
 
 @app.get("/ping")
@@ -122,7 +126,46 @@ def GasLog(price: float, db: Session = Depends(GasGetDB)):
         return {"input price": price, "error": str(ex)}, 500
 
     return {"input": price, "success": True}
+
+
+# Climate control
+@app.post("/climate")
+def GetClimate(dataType: str, data: float, db: Session = Depends(ClimateGetDB)):
+    if dataType not in ["temperature", "humidity"]:
+        return {"input": dataType, "error": "Invalid dataType"}, 400
+
+    if not data:
+        return {"input": data, "error": "Data must be provided"}, 400
+
+    if data <= 0.0:
+        return {"input": data, "error": "Data must be greater than 0"}, 400
     
+    statement = db.query(Climate).filter(Climate.type == dataType).first()
+
+    if statement:
+        statement.data = data
+        statement.timestamp = func.current_timestamp()
+        db.commit()
+    else:
+        statement = Climate(type=dataType, data=data)
+        db.add(statement)
+        db.commit()
+
+    return {"success": True}
+
+@app.get("/climate")
+def GetClimate(dataType: str, db: Session = Depends(ClimateGetDB)):
+    if dataType not in ["temperature", "humidity"]:
+        return {"input": dataType, "error": "Invalid dataType"}, 400
+
+    statement = select(Climate).where(Climate.type == dataType).order_by(Climate.timestamp.desc()).limit(1)
+    result = db.scalars(statement).first()
+
+    if result is None:
+        return {"dataType": dataType, "data": None, "timestamp": None}
+    
+    return {"dataType": dataType, "data": result.data, "timestamp": result.timestamp}
+
 
 @app.get("/url/encode")
 def URLEncode(input: str = ""):
@@ -141,7 +184,10 @@ def WakeUpJoshuaHP():
     subprocess.call(["wakeonlan", JOSHUAHP_MAC_ADDR])
 
 if __name__ == "__main__":
+    _host = "localhost"
     _port: int = 3002
+
+    _reload: bool = False
 
     if len(sys.argv) > 1:
         if sys.argv[1] == "help":
@@ -155,4 +201,6 @@ if __name__ == "__main__":
 
             _port = 3999
 
-    uvicorn.run(app, host="localhost", port=_port)
+            _reload = True
+
+    uvicorn.run("main:app", host=_host, port=_port, reload=_reload)
