@@ -11,7 +11,7 @@ _DB_HOST = os.getenv("DB_HOST")
 _DB_PORT = os.getenv("DB_PORT")
 _DB_USERNAME = os.getenv("DB_USER")
 _DB_PASSWORD = os.getenv("DB_PASS")
-_WEIGHT_DB_DATABASE = os.getenv("LOG_DB_DATABASE")
+_WEIGHT_DB_DATABASE = os.getenv("LOG_DB_NAME")
 
 _DATABASE_URL = (
     "mariadb+mariadbconnector://"
