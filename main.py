@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import FastAPI, Depends, HTTPException
 from dotenv import load_dotenv
 
@@ -191,13 +193,29 @@ def GetClimate(dataType: str, db: Session = Depends(ClimateGetDB)):
     if dataType not in ["temperature", "humidity"]:
         return {"input": dataType, "error": "Invalid dataType"}, 400
 
-    statement = select(Climate).where(Climate.type == dataType).order_by(Climate.timestamp.desc()).limit(1)
+    statement = select(Climate).where(Climate.type == dataType).limit(1)
     result = db.scalars(statement).first()
 
     if result is None:
         return {"dataType": dataType, "data": None, "timestamp": None}
     
     return {"dataType": dataType, "data": result.data, "timestamp": result.timestamp}
+
+@app.get("/temp/c2f")
+def GetClimatePreferences(dataType: str, db: Session = Depends(ClimateGetDB)):
+    if dataType not in ["temperature", "humidity"]:
+        return {"input": dataType, "error": "Invalid dataType"}, 400
+
+    statement = select(Climate).where(Climate.type == f"{dataType}Target").limit(1)
+    target = db.scalars(statement).first()
+
+    statement1 = select(Climate).where(Climate.type == f"{dataType}Tolerance").limit(1)
+    tolerance = db.scalars(statement1).first()
+
+    if target is None or tolerance is None:
+        return {"dataType": dataType, "data": None, "timestamp": None}, 400
+    
+    return {"targetTemp": target.data, "tolerance": tolerance.data}, 200
 
 
 @app.get("/url/encode")
@@ -211,6 +229,11 @@ def URLDecode(input: str = ""):
 @app.get("/url/normalizer")
 def URLNormalizer(input: str = ""):
     pass
+
+# time
+@app.get("/time/now")
+def GetNow():
+    return int(datetime.now().timestamp())
 
 @app.get("/wake/joshuahp")
 def WakeUpJoshuaHP():
